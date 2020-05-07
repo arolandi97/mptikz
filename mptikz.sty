@@ -341,6 +341,7 @@ function mptikz.block_naming(t_name, specs)
   local index_delimiter = specs:get('index_delimiter','()') -- parenthesis symbols to put around the index
   local label = specs:get('label','') -- single string same for every block
   local labels = specs:get('labels', {}) -- table! of strings, one for each block
+  local math = specs:get('math',0) -- puts mathmode around on his own
 
   local o_par = index_delimiter[1]
   local c_par = index_delimiter[2]
@@ -350,6 +351,13 @@ function mptikz.block_naming(t_name, specs)
 
   local nb_labels = #labels
   local nb_index = #start_indices
+  
+  local m_lim_local = '$'
+  local m_lim_gen = ''
+  if math == 1 then
+    m_lim_local = ''
+    m_lim_gen = '$'
+  end
 
   for b in blocks do
     local n_tensors = blocks_lenghts[b]
@@ -387,9 +395,9 @@ function mptikz.block_naming(t_name, specs)
       if nb_index > 0 then
         num = ifelse((i_0+ten ~= 1) or (str_0 == ''),string.format('%i', i_0+ten-1),'')
         num = ifelse(i_0+ten>1 and str_0 ~= '','+','') .. num
-        idx = '$' .. index_placer .. '{ ' .. o_par .. str_0 .. num .. c_par .. ' }$'
+        idx = m_lim_local .. index_placer .. '{ ' .. o_par .. str_0 .. num .. c_par .. ' }' .. m_lim_local
       end
-      local lab = label .. block_lab .. idx
+      local lab = m_lim_gen .. label .. block_lab .. idx .. m_lim_gen
       t('\\node at (%s) {%s};', tensor_name, lab)
     end
   end
